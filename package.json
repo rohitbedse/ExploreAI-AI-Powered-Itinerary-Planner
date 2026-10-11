@@ -1,0 +1,15 @@
+{
+  "name": "exploreai",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "engines": { "node": ">=20.11" },
+  "scripts": {
+    "dev": "pnpm --filter @exploreai/web dev",
+    "build": "pnpm --filter @exploreai/web build",
+    "lint": "pnpm --filter @exploreai/web lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r --if-present test",
+    "types": "node scripts/generate-types.mjs",
+    "types:check": "node scripts/generate-types.mjs --check"
+  }
+}

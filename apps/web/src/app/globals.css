@@ -1,0 +1,416 @@
+@import "tailwindcss";
+@import "./home-effects.css";
+
+/* ──────────────────────────────────────────────────────────────────────────
+   ExploreAI design tokens: "warm aurora travel app".
+   Rules: components read CSS variables only (never `dark:` variants), so any
+   subtree can be forced to a theme with the `.light` / `.dark` classes (see /design).
+   ────────────────────────────────────────────────────────────────────────── */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root,
+.light {
+  color-scheme: light;
+
+  /* Surfaces: warm off-white, never pure white or pure black text */
+  --background: #faf8f5;
+  --foreground: #1c1917;
+  --card: #fffdfa;
+  --card-foreground: #1c1917;
+  --muted: #f1ede6;
+  --muted-foreground: #6b6560;
+  --secondary: #f1ede6;
+  --secondary-foreground: #1c1917;
+  --accent: rgba(99, 102, 241, 0.09);
+  --accent-foreground: #1c1917;
+  --primary: #1c1917;
+  --primary-foreground: #faf8f5;
+  --destructive: #c81e1e;
+  --border: rgba(28, 25, 23, 0.1);
+  --input: rgba(28, 25, 23, 0.16);
+  --ring: #6366f1;
+
+  /* Brand gradient stops (exact brand colors) */
+  --brand-indigo: #6366f1;
+  --brand-violet: #8b5cf6;
+  --brand-pink: #ec4899;
+  --brand-amber: #f59e0b;
+  /* Text-safe stops: same hues, darkened so large gradient text and white-on-gradient
+     badges keep >= 3:1 against the light background. Dark theme uses the bright stops. */
+  --brand-1: #4f46e5;
+  --brand-2: #7c3aed;
+  --brand-3: #db2777;
+  --brand-4: #d97706;
+  --gradient-brand: linear-gradient(110deg, var(--brand-indigo), var(--brand-violet), var(--brand-pink), var(--brand-amber));
+  --gradient-deep: linear-gradient(135deg, var(--brand-1), var(--brand-2), var(--brand-3));
+  --gradient-text: linear-gradient(100deg, var(--brand-1), var(--brand-2) 35%, var(--brand-3) 70%, var(--brand-4));
+  /* CTA fill: indigo-700 / violet-700 / pink-700, so white text stays >= 5:1 in both themes */
+  --gradient-cta: linear-gradient(110deg, #4338ca, #6d28d9, #be185d);
+
+  /* Semantic data colors: cost / time / travel / rating */
+  --cost-fg: #065f46;
+  --cost-bg: rgba(16, 185, 129, 0.16);
+  --time-fg: #075985;
+  --time-bg: rgba(14, 165, 233, 0.15);
+  --travel-fg: #92400e;
+  --travel-bg: rgba(245, 158, 11, 0.18);
+  --rating-fg: #854d0e;
+  --rating-bg: rgba(234, 179, 8, 0.2);
+  --brand-fg: #4338ca;
+  --brand-bg: rgba(99, 102, 241, 0.12);
+  --mood-fg: #9d174d;
+  --mood-bg: rgba(236, 72, 153, 0.14);
+
+  /* Elevation: soft indigo-tinted shadows, four levels */
+  --e1: 0 1px 2px rgba(60, 40, 90, 0.06), 0 1px 1px rgba(60, 40, 90, 0.04);
+  --e2: 0 2px 6px rgba(60, 40, 90, 0.07), 0 8px 20px -6px rgba(60, 40, 90, 0.1);
+  --e3: 0 4px 10px rgba(60, 40, 90, 0.08), 0 18px 40px -10px rgba(60, 40, 90, 0.16);
+  --e4: 0 8px 16px rgba(60, 40, 90, 0.1), 0 32px 64px -16px rgba(80, 50, 140, 0.28);
+
+  /* Glass */
+  --glass-bg: rgba(255, 253, 250, 0.66);
+  --glass-border: rgba(28, 25, 23, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.95);
+
+  /* Button + effects */
+  --glow-fill: #1c1917;
+  --glow-fg: #faf8f5;
+  --glow-shadow: rgba(139, 92, 246, 0.5);
+  --shimmer-hi: rgba(255, 255, 255, 0.7);
+  --aurora-opacity: 0.38;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: #0b0b14;
+  --foreground: #f5f3ef;
+  --card: #12121f;
+  --card-foreground: #f5f3ef;
+  --muted: #1a1a2b;
+  --muted-foreground: #a6a3b8;
+  --secondary: #1a1a2b;
+  --secondary-foreground: #f5f3ef;
+  --accent: rgba(139, 92, 246, 0.16);
+  --accent-foreground: #f5f3ef;
+  --primary: #f5f3ef;
+  --primary-foreground: #0b0b14;
+  --destructive: #f87171;
+  --border: rgba(255, 255, 255, 0.09);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #8b5cf6;
+
+  --brand-1: #6366f1;
+  --brand-2: #8b5cf6;
+  --brand-3: #ec4899;
+  --brand-4: #f59e0b;
+
+  --cost-fg: #6ee7b7;
+  --cost-bg: rgba(16, 185, 129, 0.16);
+  --time-fg: #7dd3fc;
+  --time-bg: rgba(14, 165, 233, 0.16);
+  --travel-fg: #fcd34d;
+  --travel-bg: rgba(245, 158, 11, 0.16);
+  --rating-fg: #fde047;
+  --rating-bg: rgba(234, 179, 8, 0.16);
+  --brand-fg: #c4b5fd;
+  --brand-bg: rgba(139, 92, 246, 0.2);
+  --mood-fg: #f9a8d4;
+  --mood-bg: rgba(236, 72, 153, 0.18);
+
+  --e1: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --e2: 0 6px 18px -4px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --e3: 0 14px 36px -8px rgba(0, 0, 0, 0.65), 0 0 24px -8px rgba(139, 92, 246, 0.25);
+  --e4: 0 28px 64px -12px rgba(0, 0, 0, 0.75), 0 0 48px -10px rgba(139, 92, 246, 0.42);
+
+  --glass-bg: rgba(20, 20, 38, 0.58);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-highlight: rgba(255, 255, 255, 0.09);
+
+  --glow-fill: #15152a;
+  --glow-fg: #ffffff;
+  --glow-shadow: rgba(139, 92, 246, 0.7);
+  --shimmer-hi: rgba(255, 255, 255, 0.08);
+  --aurora-opacity: 0.5;
+}
+
+/* Map tokens to Tailwind utilities (Tailwind v4 reads its "config" from @theme). */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-brand-indigo: var(--brand-indigo);
+  --color-brand-violet: var(--brand-violet);
+  --color-brand-pink: var(--brand-pink);
+  --color-brand-amber: var(--brand-amber);
+
+  --color-cost: var(--cost-fg);
+  --color-cost-soft: var(--cost-bg);
+  --color-time: var(--time-fg);
+  --color-time-soft: var(--time-bg);
+  --color-travel: var(--travel-fg);
+  --color-travel-soft: var(--travel-bg);
+  --color-rating: var(--rating-fg);
+  --color-rating-soft: var(--rating-bg);
+  --color-brand: var(--brand-fg);
+  --color-brand-soft: var(--brand-bg);
+  --color-mood: var(--mood-fg);
+  --color-mood-soft: var(--mood-bg);
+
+  --shadow-e1: var(--e1);
+  --shadow-e2: var(--e2);
+  --shadow-e3: var(--e3);
+  --shadow-e4: var(--e4);
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+}
+
+@theme {
+  /* Radius scale: cards live at lg-2xl (20-28px) */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 28px;
+
+  /* Fluid type scale */
+  --text-display: clamp(2.5rem, 1.2rem + 5.5vw, 4.75rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.035em;
+  --text-h1: clamp(1.875rem, 1.2rem + 2.6vw, 2.75rem);
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.03em;
+  --text-h2: clamp(1.375rem, 1.1rem + 1.1vw, 1.75rem);
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.02em;
+  --text-lead: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  --text-lead--line-height: 1.55;
+
+  /* Easing, shared with lib/motion.ts */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    overflow-x: clip;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--brand-violet) 35%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+/* ── Glass: blur + hairline translucent border + inner top highlight ───────── */
+@utility glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--e2);
+}
+
+/* ── Gradient text ─────────────────────────────────────────────────────────── */
+.gradient-text {
+  background: var(--gradient-text);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  padding-bottom: 0.08em; /* keeps descenders from clipping */
+}
+.gradient-text[data-flow="true"] {
+  animation: text-flow 8s ease-in-out infinite alternate;
+}
+
+/* ── GlowButton: animated gradient border + hover shimmer ──────────────────── */
+.glow-btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  padding: 0.85rem 1.7rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--glow-fg);
+  background: var(--glow-fill);
+  box-shadow: var(--e2);
+  cursor: pointer;
+  transition: box-shadow 0.35s var(--ease-out-expo);
+}
+.glow-btn[data-size="sm"] {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.875rem;
+}
+.glow-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: linear-gradient(100deg, var(--brand-indigo), var(--brand-violet), var(--brand-pink), var(--brand-amber), var(--brand-indigo));
+  background-size: 300% 100%;
+  animation: border-flow 5s linear infinite;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+}
+.glow-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.38) 50%, transparent 65%);
+  transform: translateX(-130%);
+  pointer-events: none;
+}
+.glow-btn:hover:not(:disabled):not([aria-disabled="true"]) {
+  box-shadow: var(--e3), 0 0 32px -4px var(--glow-shadow);
+}
+.glow-btn:hover:not(:disabled):not([aria-disabled="true"])::after {
+  transform: translateX(130%);
+  transition: transform 0.75s var(--ease-out-expo);
+}
+.glow-btn:is(:disabled, [aria-disabled="true"]) {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: var(--e1);
+}
+.glow-btn:is(:disabled, [aria-disabled="true"])::before {
+  animation: none;
+}
+.glow-btn:is(:disabled, [aria-disabled="true"])::after {
+  display: none;
+}
+
+/* ── Skeleton shimmer ──────────────────────────────────────────────────────── */
+.shimmer {
+  background: linear-gradient(100deg, var(--muted) 35%, var(--shimmer-hi) 50%, var(--muted) 65%);
+  background-size: 250% 100%;
+  animation: shimmer 1.7s linear infinite;
+}
+
+/* ── Aurora background: radial-gradient blobs (cheap) moved with transforms only ─ */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+.aurora[data-contained="true"] {
+  position: absolute;
+  z-index: 0;
+}
+.aurora-blob {
+  position: absolute;
+  width: 58vmax;
+  height: 58vmax;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--c), transparent 72%);
+  opacity: var(--aurora-opacity);
+  will-change: transform;
+  animation: aurora-drift var(--d, 24s) ease-in-out infinite alternate;
+}
+.aurora[data-contained="true"] .aurora-blob {
+  width: 70%;
+  height: 140%;
+}
+.aurora[data-paused="true"] .aurora-blob {
+  animation-play-state: paused;
+}
+
+/* ── Map markers (HTML elements created in plan-map.tsx) ───────────────────── */
+.map-marker {
+  display: flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  border-radius: 9999px;
+  background: var(--gradient-deep);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(60, 40, 90, 0.4);
+  transition: transform 0.25s var(--ease-out-expo), box-shadow 0.25s;
+}
+.map-marker[data-active="true"] {
+  transform: scale(1.3);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.35), 0 6px 18px rgba(139, 92, 246, 0.6);
+}
+
+@keyframes border-flow {
+  to {
+    background-position: -300% 0;
+  }
+}
+@keyframes text-flow {
+  to {
+    background-position: 100% 0;
+  }
+}
+@keyframes shimmer {
+  to {
+    background-position: -250% 0;
+  }
+}
+@keyframes aurora-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(var(--x, 8vw), var(--y, 6vh), 0) scale(1.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-btn::before,
+  .gradient-text[data-flow="true"],
+  .shimmer,
+  .aurora-blob {
+    animation: none;
+  }
+  .glow-btn::after {
+    display: none;
+  }
+  .map-marker {
+    transition: none;
+  }
+}

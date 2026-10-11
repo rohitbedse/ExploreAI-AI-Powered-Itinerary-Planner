@@ -1,0 +1,396 @@
+/* Home page effects. Imported by globals.css; reads the same design tokens. */
+
+/* Pointer parallax: ancestors get --px/--py (-1..1) from use-parallax; these opt in via --depth (px). */
+.parallax {
+  transform: translate3d(calc(var(--px, 0) * var(--depth, 0) * 1px), calc(var(--py, 0) * var(--depth, 0) * 1px), 0);
+  transition: transform 1s var(--ease-out-expo);
+  will-change: transform;
+}
+.aurora-layer {
+  position: absolute;
+  inset: 0;
+}
+
+/* Hero backdrop: faint dotted grid + grain, fading out toward the edges */
+.hero-backdrop {
+  position: absolute;
+  left: 50%;
+  top: -6rem;
+  z-index: -1;
+  width: 100vw;
+  height: 46rem;
+  transform: translateX(-50%);
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse 62% 68% at 50% 30%, #000 22%, transparent 78%);
+  mask-image: radial-gradient(ellipse 62% 68% at 50% 30%, #000 22%, transparent 78%);
+}
+.dot-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, color-mix(in oklab, var(--foreground) 24%, transparent) 1px, transparent 1.6px);
+  background-size: 24px 24px;
+}
+.noise {
+  position: absolute;
+  inset: 0;
+  opacity: var(--noise-opacity, 0.22);
+  background-size: 180px 180px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.dark .noise {
+  --noise-opacity: 0.32;
+}
+
+/* Pill with a light sweep travelling around its border */
+.shimmer-border {
+  position: relative;
+  isolation: isolate;
+}
+.shimmer-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: linear-gradient(105deg, transparent 30%, var(--brand-violet) 42%, var(--brand-pink) 50%, var(--brand-amber) 58%, transparent 70%);
+  background-size: 250% 100%;
+  animation: ring-sweep 3.4s linear infinite;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+}
+
+/* Floating decorative cards around the prompt box */
+.float-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0.8;
+  animation: float var(--dur, 7s) ease-in-out var(--delay, 0s) infinite alternate;
+}
+
+/* Prompt box: gradient ring + glow that intensify on focus */
+.prompt-glow {
+  position: relative;
+  isolation: isolate;
+}
+.prompt-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: linear-gradient(100deg, var(--brand-indigo), var(--brand-violet), var(--brand-pink), var(--brand-amber), var(--brand-indigo));
+  background-size: 300% 100%;
+  animation: border-flow 8s linear infinite;
+  opacity: 0.5;
+  transition: opacity 0.4s;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+  z-index: 2;
+}
+.prompt-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: 0 14px 60px -18px var(--glow-shadow);
+  opacity: 0.4;
+  transition: opacity 0.5s, box-shadow 0.5s;
+  pointer-events: none;
+}
+.prompt-glow:focus-within::before {
+  opacity: 1;
+  animation-duration: 3.2s;
+}
+.prompt-glow:focus-within::after {
+  opacity: 1;
+  box-shadow: 0 0 0 5px color-mix(in oklab, var(--brand-violet) 16%, transparent), 0 16px 80px -10px var(--glow-shadow);
+}
+
+/* Typewriter caret */
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  margin-left: 2px;
+  vertical-align: -0.18em;
+  background: var(--brand-violet);
+  animation: blink 1s steps(1) infinite;
+}
+
+/* Mic ripple + live waveform */
+.mic-ripple {
+  position: relative;
+}
+.mic-ripple::before,
+.mic-ripple::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid var(--brand-pink);
+  opacity: 0;
+  animation: ripple 1.8s var(--ease-out-expo) infinite;
+  pointer-events: none;
+}
+.mic-ripple::after {
+  animation-delay: 0.9s;
+}
+.waveform {
+  display: flex;
+  height: 1.75rem;
+  align-items: center;
+  gap: 3px;
+}
+.wave-bar {
+  width: 3px;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--gradient-deep);
+  transform: scaleY(0.14);
+  will-change: transform;
+}
+.waveform[data-fallback="true"] .wave-bar {
+  animation: wave 1.1s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 70ms);
+}
+
+/* Example cards: 3D tilt + spotlight following the cursor (vars written by example-cards.tsx) */
+.tilt-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--ty, 0px));
+  transition: transform 0.55s var(--ease-out-expo), box-shadow 0.4s, border-color 0.3s;
+}
+.tilt-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 0%), color-mix(in oklab, var(--brand-violet) 30%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tilt-card:hover {
+    --ty: -6px;
+    transition-duration: 0.12s, 0.4s, 0.3s;
+    box-shadow: var(--e4);
+    border-color: color-mix(in oklab, var(--brand-violet) 50%, var(--glass-border));
+  }
+  .tilt-card:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Location: pulsing "detected" dot, inviting dashed state */
+.pulse-dot {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: #22c55e;
+}
+.pulse-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: ping-dot 1.8s ease-out infinite;
+}
+.chip-invite {
+  border-style: dashed;
+  border-color: color-mix(in oklab, var(--brand-violet) 60%, transparent);
+}
+
+/* CTA gradient fill + rotating sparkle */
+.glow-btn[data-variant="gradient"] {
+  background: var(--gradient-cta);
+  background-size: 220% 100%;
+  color: #fff;
+  animation: cta-flow 7s ease-in-out infinite alternate;
+}
+.glow-btn .sparkle {
+  transition: transform 0.7s var(--ease-out-expo);
+}
+.glow-btn:hover:not(:disabled):not([aria-disabled="true"]) .sparkle {
+  transform: rotate(200deg) scale(1.2);
+}
+
+/* Sticky navbar: shrinks and blurs harder once scrolled */
+.header-bar {
+  width: 100%;
+  max-width: 72rem;
+  height: 3.5rem;
+  transition: height 0.35s var(--ease-out-expo), max-width 0.5s var(--ease-out-expo), box-shadow 0.35s;
+}
+.header-bar[data-scrolled="true"] {
+  height: 2.75rem;
+  max-width: 58rem;
+  -webkit-backdrop-filter: blur(28px) saturate(1.8);
+  backdrop-filter: blur(28px) saturate(1.8);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--e3);
+}
+.nav-indicator {
+  position: absolute;
+  bottom: 0.2rem;
+  left: 0;
+  height: 2px;
+  border-radius: 9999px;
+  background: var(--gradient-deep);
+  transition: transform 0.5s var(--ease-out-expo), width 0.5s var(--ease-out-expo), opacity 0.2s;
+}
+
+/* Sun <-> moon morph (driven by data-dark on the svg) */
+.theme-icon .sun-core,
+.theme-icon .moon-cut,
+.theme-icon .sun-rays {
+  transition: transform 0.6s var(--ease-out-expo), opacity 0.3s;
+}
+.theme-icon .sun-core {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.theme-icon .moon-cut {
+  transform: translate(16px, -16px);
+}
+.theme-icon .sun-rays {
+  transform-origin: 12px 12px;
+}
+.theme-icon[data-dark="true"] .sun-core {
+  transform: scale(1.55);
+}
+.theme-icon[data-dark="true"] .moon-cut {
+  transform: translate(5px, -4.5px);
+}
+.theme-icon[data-dark="true"] .sun-rays {
+  transform: rotate(60deg) scale(0.4);
+  opacity: 0;
+}
+
+/* Theme change: circle reveal from the toggle (clip-path animated in theme-toggle.tsx) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+
+.kbd {
+  display: inline-flex;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.4rem;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 0.45rem;
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  box-shadow: var(--e1);
+}
+
+@keyframes ring-sweep {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -150% 0;
+  }
+}
+@keyframes float {
+  from {
+    transform: translate3d(0, -7px, 0) rotate(var(--rot, 0deg));
+  }
+  to {
+    transform: translate3d(0, 9px, 0) rotate(var(--rot, 0deg));
+  }
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+@keyframes wave {
+  0%,
+  100% {
+    transform: scaleY(0.2);
+  }
+  50% {
+    transform: scaleY(0.85);
+  }
+}
+@keyframes ping-dot {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+@keyframes cta-flow {
+  to {
+    background-position: 100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax,
+  .nav-indicator,
+  .theme-icon .sun-core,
+  .theme-icon .moon-cut,
+  .theme-icon .sun-rays,
+  .tilt-card,
+  .header-bar,
+  .glow-btn .sparkle {
+    transition: none;
+  }
+  .shimmer-border::before,
+  .float-card,
+  .prompt-glow::before,
+  .caret,
+  .mic-ripple::before,
+  .mic-ripple::after,
+  .waveform[data-fallback="true"] .wave-bar,
+  .pulse-dot::after,
+  .glow-btn[data-variant="gradient"] {
+    animation: none;
+  }
+  .tilt-card:hover {
+    --ty: 0px;
+  }
+}

@@ -1,0 +1,48 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+        exclude: tsconfig.*\.json$
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.6
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^apps/api/
+      - id: ruff-format
+        files: ^apps/api/
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy (api)
+        entry: bash -c 'cd apps/api && uv run mypy .'
+        language: system
+        pass_filenames: false
+        files: ^apps/api/.*\.py$
+      - id: web-lint
+        name: eslint (web)
+        entry: pnpm lint
+        language: system
+        pass_filenames: false
+        files: ^apps/web/.*\.(ts|tsx|js|mjs)$
+      - id: web-typecheck
+        name: tsc (web + shared)
+        entry: pnpm typecheck
+        language: system
+        pass_filenames: false
+        files: ^(apps/web|packages/shared)/.*\.(ts|tsx)$
+      - id: openapi-types
+        name: TS types match OpenAPI
+        entry: pnpm types:check
+        language: system
+        pass_filenames: false
+        files: ^apps/api/app/.*\.py$
