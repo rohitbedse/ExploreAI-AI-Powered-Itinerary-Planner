@@ -43,10 +43,17 @@ def _c(slug: str, sel: str, visit: int, kws: str, *, food: bool = False) -> Cate
 CATEGORIES: dict[str, Category] = {
     c.slug: c
     for c in (
-        _c("museum", "tourism=museum", 75, "museum museums history culture heritage exhibit"),
-        _c("gallery", "tourism=gallery", 45, "art gallery galleries culture exhibition"),
+        _c(
+            "museum", "tourism=museum", 75, "museum museums history culture heritage exhibit indoor"
+        ),
+        _c("gallery", "tourism=gallery", 45, "art gallery galleries culture exhibition indoor"),
         _c("attraction", "tourism=attraction", 45, "sightseeing landmark attraction tourist"),
-        _c("viewpoint", "tourism=viewpoint", 25, "view viewpoint scenic sunset skyline"),
+        _c(
+            "viewpoint",
+            "tourism=viewpoint",
+            25,
+            "view viewpoint viewpoints scenic sunset skyline romantic",
+        ),
         _c(
             "historic",
             "historic=monument historic=castle historic=fort historic=memorial "
@@ -64,15 +71,22 @@ CATEGORIES: dict[str, Category] = {
             "park",
             "leisure=park leisure=garden",
             45,
-            "park garden nature green outdoors relaxing walk calm quiet",
+            "park garden nature green outdoors relaxing relaxation peaceful serene walk walking "
+            "stroll calm quiet picnic",
         ),
         _c("nature", "natural=beach leisure=nature_reserve", 60, "nature beach hiking outdoors"),
-        _c("cafe", "amenity=cafe", 45, "cafe coffee tea brunch chill relaxing", food=True),
+        _c(
+            "cafe",
+            "amenity=cafe",
+            45,
+            "cafe coffee tea brunch chill relaxing date indoor",
+            food=True,
+        ),
         _c(
             "restaurant",
             "amenity=restaurant",
             60,
-            "food restaurant dining dinner lunch eat",
+            "food restaurant dining dinner lunch eat date",
             food=True,
         ),
         _c(
@@ -96,13 +110,13 @@ CATEGORIES: dict[str, Category] = {
             "entertainment",
             "amenity=theatre amenity=cinema",
             120,
-            "movie movies cinema theatre show",
+            "movie movies cinema theatre theater show indoor",
         ),
         _c(
             "family",
             "tourism=zoo tourism=aquarium tourism=theme_park",
             120,
-            "zoo aquarium kids family",
+            "zoo aquarium kids children family animals wildlife",
         ),
     )
 }

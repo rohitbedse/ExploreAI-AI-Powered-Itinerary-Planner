@@ -89,7 +89,7 @@ Environment variables (all in `.env.example`, which documents each one):
 | `CORS_ORIGINS` | defaults to `http://localhost:3000` | must include the web origin; `*` is rejected |
 | `NEXT_PUBLIC_API_URL` | defaults to `http://localhost:8000` | must match the API origin |
 | `NEXT_PUBLIC_MAP_STYLE_URL` | optional | defaults to OpenFreeMap "liberty" |
-| `GEMINI_API_KEY`, `GEMINI_MODEL` | optional | blank = rule-based intent parsing (English, regex; lower recall). Never exercised live yet |
+| `GEMINI_API_KEY`, `GEMINI_MODEL` | optional | blank = rule-based intent parsing (English, regex; lower recall). Live-checked 2026-10-11 |
 | `OVERPASS_URL`, `PHOTON_URL`, `OSRM_URL` | optional | public instances by default; the public OSRM demo only serves driving |
 | `OSRM_WALK_URL` / `OSRM_BIKE_URL` | optional | blank = walking/cycling legs are straight-line **estimates**, labelled as such |
 | `PLAN_UTC_OFFSET_MINUTES` | optional | 330 (India) default; plans start "now" in this fixed offset (no DST/tz database) |
@@ -142,7 +142,7 @@ Not yet:
 
 - Plan persistence, GET/save/revise and auth (the UI shows Save / Cheaper / Swap / Add buttons, but they hit 501; reloading `/plan/{id}` loses the plan).
 - No cache: identical Photon/Overpass queries are repeated (next task: in-process TTL cache + Overpass fallback URL).
-- Postgres/Redis containers exist but nothing talks to them. Only Gemini of the LLM chain is implemented, and never verified live.
+- Postgres/Redis containers exist but nothing talks to them. Only Gemini of the LLM chain is implemented.
 - Ranking is interest category + distance (OSM has no ratings); visit lengths are per-category assumptions, disclosed in `Plan.notes`.
 
 Detailed history, decisions and the next task: `docs/project-memory/` (`NEXT_SESSION.md`, `IMPLEMENTATION_STATUS.md`, `DECISIONS.md`, `ARCHITECTURE.md`, `PROJECT_BRIEF.md`).

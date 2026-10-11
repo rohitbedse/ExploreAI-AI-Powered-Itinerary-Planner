@@ -2,7 +2,13 @@
 
 _Audit 2026-10-09, then the backend-foundation session the same day. Sections 0–6 are the **audit snapshot**; where §S1/§S2 contradict them, the later section wins._
 
-## S5. Failure hunt (2026-10-11) — newest
+## S6. Example prompts failing with Gemini enabled (2026-10-11) — newest
+
+- **Bug:** with `GEMINI_API_KEY` set, Gemini returns free-form interest labels ("relaxation", "animals", "walking", "indoor activities"); `match_categories` only matched exact keywords, so the home-page examples "Relaxing solo" (sometimes) and "Family fun" (always) ended with "I can't search for … yet". The rule-based fallback never hit this, which is why tests passed.
+- **Fix:** `planning/builder.py` matches on a 5-letter root as well (relaxation ~ relaxing); `planning/places.py` keywords broadened (animals/wildlife -> zoo/aquarium, walking/peaceful -> park, indoor -> museum/gallery/cafe/cinema, date -> cafe/restaurant); when **no** interest matches, the default sightseeing mix is used and disclosed in `Plan.notes` instead of a hard error.
+- **Checks:** pytest 235 passed (new parametrised matching tests; `test_unmapped_interest_is_reported_not_faked` updated to the new behaviour), ruff/format/mypy clean. Live against the user's running uvicorn: both example prompts streamed `complete` (Cubbon Park + 2 cafes; Bangalore Aquarium). Web checks not re-run (no web change).
+
+## S5. Failure hunt (2026-10-11)
 
 ### Fixed
 - **Flaky Playwright e2e in default parallel mode** (`apps/web/playwright.config.ts`): 3 failed per run (different tests each run). Trace showed `Test timeout of 30000ms exceeded` with `page.goto("/")` alone taking ~21 s: 6 workers (12 cores) saturated the single `next dev` server. Not a compile-on-first-hit issue: a route warm-up globalSetup was tried and changed nothing (removed). Raising the test timeout to 60 s just moved the failures to 10 s `toHaveURL` timeouts. Fix: `workers: process.env.CI ? undefined : 2`. Serial had been faster than default parallel (1.6 vs 1.8 min).

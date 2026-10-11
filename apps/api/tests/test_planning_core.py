@@ -200,6 +200,25 @@ def test_interest_matching_unmatched_and_default() -> None:
     assert w3["street_food"] == pytest.approx(0.6)
 
 
+@pytest.mark.parametrize(
+    ("label", "slug"),
+    [("relaxation", "park"), ("animals", "family"), ("walking", "park"),
+     ("indoor activities", "museum"), ("cultural sites", "museum"), ("good food", "restaurant")],
+)  # fmt: skip
+def test_interest_matching_tolerates_llm_wording(label: str, slug: str) -> None:
+    w, unmatched, default = match_categories(
+        _intent(interests=[Interest(label=label, source="explicit")])
+    )
+    assert slug in w and unmatched == [] and not default
+
+
+def test_interest_matching_falls_back_to_default_mix_when_nothing_matches() -> None:
+    w, unmatched, default = match_categories(
+        _intent(interests=[Interest(label="skydiving", source="explicit")])
+    )
+    assert default and unmatched == ["skydiving"] and "park" in w
+
+
 def test_constraints_filter_verifiable_ones_and_report_the_rest() -> None:
     veg = _place(1, "restaurant", **{"diet:vegetarian": "yes"})
     nonveg = _place(2, "restaurant")
@@ -388,8 +407,9 @@ async def test_insufficient_time_is_reported_as_infeasible() -> None:
 
 async def test_unmapped_interest_is_reported_not_faked() -> None:
     odd = [Interest(label="skydiving", source="explicit")]
-    with pytest.raises(PlanningError, match="skydiving"):
-        await _build(_intent(interests=odd))
+    only_odd = await _build(_intent(interests=odd))
+    assert any("skydiving" in n for n in only_odd.notes)
+    assert any("general mix" in n for n in only_odd.notes)
     mixed = [
         Interest(label="skydiving", source="explicit"),
         Interest(label="parks", source="explicit"),

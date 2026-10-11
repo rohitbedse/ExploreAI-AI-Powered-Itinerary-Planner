@@ -58,12 +58,27 @@ Clock = Callable[[], datetime]
 PROVIDER_DOWN = "Place data is temporarily unavailable. Please try again in a moment."
 
 
+_ROOT_LEN = 5
+
+
 def _stem(word: str) -> set[str]:
-    return {word, word.rstrip("s")} if len(word) > 3 else {word}
+    """Exact form, plural-stripped form and, for longer words, a 5-letter root, so LLM labels
+    like "relaxation" or "museums" still meet the keyword "relaxing" / "museum"."""
+    out = {word, word.rstrip("s")} if len(word) > 3 else {word}
+    if len(word) >= _ROOT_LEN:
+        out.add(word[:_ROOT_LEN] + "*")
+    return out
+
+
+_KEYWORD_STEMS: dict[str, set[str]] = {
+    slug: {s for kw in c.keywords for s in _stem(kw)} for slug, c in CATEGORIES.items()
+}
 
 
 def match_categories(intent: Intent) -> tuple[dict[str, float], list[str], bool]:
-    """(category -> weight, unmatched interest labels, used_default_set)."""
+    """(category -> weight, unmatched interest labels, used_default_set).
+
+    If no interest maps to a category, the default sightseeing mix is used (and reported)."""
     if not intent.interests:
         return {slug: 1.0 for slug in DEFAULT_CATEGORIES}, [], True
     weights: dict[str, float] = defaultdict(float)
@@ -71,11 +86,13 @@ def match_categories(intent: Intent) -> tuple[dict[str, float], list[str], bool]
     for interest in intent.interests:
         words = re.findall(r"[a-z]+", interest.label.lower())
         stems = {s for w in words for s in _stem(w)} | {"".join(words)}
-        hit = [slug for slug, c in CATEGORIES.items() if stems & c.keywords]
+        hit = [slug for slug, kws in _KEYWORD_STEMS.items() if stems & kws]
         if not hit:
             unmatched.append(interest.label)
         for slug in hit:
             weights[slug] += _WEIGHT[interest.source]
+    if not weights:
+        return {slug: 1.0 for slug in DEFAULT_CATEGORIES}, unmatched, True
     return dict(weights), unmatched, False
 
 
@@ -191,15 +208,11 @@ class DeterministicPlanBuilder:
 
         # 2. Real places from OpenStreetMap.
         weights, unmatched, used_default = match_categories(intent)
-        if not weights:
-            raise PlanningError(
-                "I can't search for "
-                + ", ".join(unmatched)
-                + " yet. Try something like museums, parks, cafes or street food."
-            )
         if unmatched:
             notes.append("Not searched (no matching place type yet): " + ", ".join(unmatched) + ".")
-        if used_default:
+        if used_default and unmatched:
+            notes.append("None of your interests matched a place type, so this is a general mix.")
+        elif used_default:
             notes.append("No specific interests were given, so this is a general sightseeing mix.")
         categories = sorted(weights, key=lambda c: (-weights[c], c))[:MAX_CATEGORIES]
         radius = SEARCH_RADIUS_M[mode]
